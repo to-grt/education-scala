@@ -28,12 +28,13 @@ def _06_adt(): Unit =
 
     import Expression.*
 
+
     def eval(expression: Expression, variableValue: Double): Double =
       expression match
-        case Variable          => |>?
-        case Constant(value)   => |>?
-        case Add(left, right)  => |>?
-        case Mult(left, right) => |>?
+        case Variable          => variableValue
+        case Constant(value)   => value
+        case Add(left, right)  => eval(left, variableValue) + eval(right, variableValue)
+        case Mult(left, right) => eval(left, variableValue) * eval(right, variableValue)
 
     exercise("Evaluate an expression") {
       check(eval(Variable, 3) == 3.0)
