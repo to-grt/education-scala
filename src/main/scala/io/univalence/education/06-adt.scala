@@ -50,7 +50,12 @@ def _06_adt(): Unit =
      * This will serve as an heuristic in order to estimate the
      * complexity of an expression.
      */
-    def size(expression: Expression): Int = |>?
+    def size(expression: Expression): Int =
+      expression match
+        case Variable           => 1
+        case Constant(value)    => 1
+        case Add(left, right)   => size(left) + size(right) + 1
+        case Mult(left, right)  => size(left) + size(right) + 1
 
     exercise("Size of an expression") {
       check(size(Variable) == 1)
@@ -84,7 +89,12 @@ def _06_adt(): Unit =
        * happens.
        */
 
-      def simplify(expression: Expression): Expression = |>?
+      def simplify(expression: Expression): Expression =
+        expression match
+          case Variable           => expression
+          case Constant(value)    => expression
+          case Add(left, right)   => 
+          case Mult(left, right)  => 
 
       /**
        * Find the fixed point of a function.
