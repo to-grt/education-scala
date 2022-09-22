@@ -7,9 +7,9 @@ import scala.annotation.tailrec
 import scala.concurrent.*
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Random, Success, Try}
-
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
+import scala.language.postfixOps
 
 /**
  * =Standard library=
@@ -41,8 +41,8 @@ def _03_standard_library(): Unit =
     exercise("Create a list containing a 1") {
       val list: List[Int] = List(1)
 
-      check(list.length == ??)
-      check(list.headOption == ??)
+      check(list.length == 1)
+      check(list.headOption == Some(1))
     }
 
     val numbers: List[Int] = List(1, 2, 3, 4, 5)
@@ -50,27 +50,27 @@ def _03_standard_library(): Unit =
     exercise("Find the size of a list") {
       val numberOfNumbers: Int = numbers.length
 
-      check(numberOfNumbers == ??)
+      check(numberOfNumbers == 5)
     }
 
     exercise("Check if an element exists or not") {
       val contains3: Boolean = numbers.contains(3)
       val contains6: Boolean = numbers.contains(6)
 
-      check(contains3 == ??)
-      check(contains6 == ??)
+      check(contains3)
+      check(!contains6)
     }
 
     exercise("Append (at the end of the list) the number 6") {
       val numbersThen6: List[Int] = numbers :+ 6
 
-      check(numbersThen6 == ??)
+      check(numbersThen6 == List(1, 2, 3, 4, 5, 6))
     }
 
     exercise("Prepend (at the beginning of the list) the number 0") {
       val numbersAfter0: List[Int] = 0 +: numbers
 
-      check(numbersAfter0 == ??)
+      check(numbersAfter0 == List(0, 1, 2, 3, 4, 5))
     }
 
     /**
@@ -81,7 +81,7 @@ def _03_standard_library(): Unit =
     exercise("Transform all elements of a list using `map`") {
       val numbersTimes2: List[Int] = numbers.map(_ * 2)
 
-      check(numbersTimes2 == ??)
+      check(numbersTimes2 == List(2, 4, 6, 8, 10))
     }
 
     /**
@@ -90,7 +90,7 @@ def _03_standard_library(): Unit =
     exercise("Filter all odd elements of a list using `filter`") {
       val evenNumbers: List[Int] = numbers.filter(_ % 2 == 0)
 
-      check(evenNumbers == ??)
+      check(evenNumbers == List(2, 4))
     }
   }
 
@@ -127,13 +127,13 @@ def _03_standard_library(): Unit =
    */
   section("Practicing with Option[A]") {
     exercise("Create an option with no value") {
-      val none: Option[Int] = |>?
+      val none: Option[Int] = None
 
       check(none.isEmpty)
     }
 
     exercise("Create an option with a value of 10") {
-      val some: Option[Int] = |>?
+      val some: Option[Int] = Option(10)
 
       check(some.isDefined)
       check(some.contains(10))
@@ -144,7 +144,7 @@ def _03_standard_library(): Unit =
       val some: Option[Int]        = Some(10)
       val updatedSome: Option[Int] = some.map(_ + 10)
 
-      check(updatedSome == ??)
+      check(updatedSome == Option(20))
     }
 
     /**
@@ -158,7 +158,7 @@ def _03_standard_library(): Unit =
       val maybeCredentials: Option[(String, String)] =
         maybeUsername.flatMap(username => maybePassword.map(password => (username, password)))
 
-      check(maybeCredentials == ??)
+      check(maybeCredentials == Some(("student@school.com", "I luv scala 123")))
     }
 
     /**
@@ -169,7 +169,7 @@ def _03_standard_library(): Unit =
       val none: Option[Int] = None
       val value: Int        = none.getOrElse(10)
 
-      check(value == ??)
+      check(value == 10)
     }
 
     /**
@@ -187,15 +187,15 @@ def _03_standard_library(): Unit =
     }
 
     /**
-     * You can also pattern match and handle the error differently thant
+     * You can also pattern match and handle the error differently than
      * the value case.
      */
     exercise("Return the string 'There is no value' if it is none or 'There is a value' if it is some") {
       val none: Option[Int] = None
       val res: String =
         none match {
-          case Some(_) => |>?
-          case None    => |>?
+          case Some(_) => "There is a value"
+          case None    => "There is no value"
         }
 
       check(res == "There is no value")
@@ -226,14 +226,14 @@ def _03_standard_library(): Unit =
     exercise("Create an either with a value of 200") {
       val right: Either[String, Int] = Right(200)
 
-      check(right == ??)
+      check(right == Right(200))
     }
 
     exercise("Create an either with the string error 'Wrong code'") {
       val left: Either[String, Int] = Left("Wrong code")
 
-      check(left == ??)
-      check(left.swap == ??)
+      check(left == Left("Wrong code"))
+      check(left.swap == Right("Wrong code"))
     }
 
     /** Try to apply what you learn with list here. */
@@ -241,7 +241,7 @@ def _03_standard_library(): Unit =
       val either: Either[String, Int]        = Right(200)
       val updatedEither: Either[String, Int] = either.map(_ + 10)
 
-      check(updatedEither == ??)
+      check(updatedEither == Right(210))
     }
 
     /**
@@ -255,14 +255,14 @@ def _03_standard_library(): Unit =
       val maybeCredentials: Either[String, (String, String)] =
         maybeUsername.flatMap(username => maybePassword.map(password => (username, password)))
 
-      check(maybeCredentials == ??)
+      check(maybeCredentials == Left("The password should contain symbols."))
     }
 
     exercise("Recover from an error value using a default value of 10") {
       val either: Either[String, Int] = Left("The value is missing")
       val value: Int                  = either.getOrElse(10)
 
-      check(value == ??)
+      check(value == 10)
     }
   }
 
@@ -306,14 +306,14 @@ def _03_standard_library(): Unit =
       val future: Future[Int] = promise.future
 
       // add a task to the future once it will be completed
-      future.foreach(value => check(value == ??))
+      future.foreach(value => check(value == 42))
 
-      check(future.isCompleted == ??)
+      check(future.isCompleted == false)
 
       // trigger the promise with a value. This complete the bound future.
       promise.success(42)
 
-      check(future.isCompleted == ??)
+      check(future.isCompleted == true)
     }
 
     // TODO: Since you will have to wait for this test, you should only activate it when you are doing it.
@@ -334,8 +334,8 @@ def _03_standard_library(): Unit =
     exercise("Create a Future with an immediate value of 200") {
       val future: Future[Int] = Future(200)
 
-      check(future.isCompleted == ??)
-      check(future.value.contains(??))
+      check(future.isCompleted == true)
+      check(future.value.contains(Success(200)))
     }
 
     exercise("Change a Future that may not arrived yet adding 100 to 200.") {
@@ -343,7 +343,7 @@ def _03_standard_library(): Unit =
       val future: Future[Int]            = Future(200)
       val transformedFuture: Future[Int] = future.map(_ + 100)
 
-      check(transformedFuture.value.contains(??))
+      check(transformedFuture.value.contains(Success(300)))
     }
 
     exercise("Chain two futures summing two arriving values") {
@@ -352,7 +352,7 @@ def _03_standard_library(): Unit =
 
       val futureSum = future1.flatMap(value1 => future2.map(value2 => value1 + value2))
 
-      check(Await.result(futureSum, Duration.Inf) == ??)
+      check(Await.result(futureSum, Duration.Inf) == 300)
     }
 
     exercise("Chain futures and promises") {
@@ -368,17 +368,17 @@ def _03_standard_library(): Unit =
           b <- future2
         } yield a + b
 
-      future3.foreach(value => check(value == ??))
+      future3.foreach(value => check(value == 300))
 
-      check(future3.isCompleted == ??)
+      check(future3.isCompleted == false)
 
       promise1.success(100)
 
-      check(future3.isCompleted == ??)
+      check(future3.isCompleted == false)
 
       promise2.success(200)
 
-      check(future3.isCompleted == ??)
+      check(future3.isCompleted == true)
     }
 
     exercise("Chain even more futures (and more promises)...") {
@@ -398,7 +398,9 @@ def _03_standard_library(): Unit =
        */
       val futureOfList: Future[List[Int]] = Future.sequence(listOfFutures)
 
-      futureOfList.foreach(list => check(list.sum == ??))
+      println(futureOfList)
+
+      futureOfList.foreach(list => check(list.sum == 15))
 
       // zipWithIndex associates to each item of a list its item.
       promises.zipWithIndex.map { case (p, i) =>
@@ -408,7 +410,7 @@ def _03_standard_library(): Unit =
       // this helps to let futureOfList completed
       Thread.sleep(100)
 
-      check(futureOfList.isCompleted == ??)
+      check(futureOfList.isCompleted == true)
     }
   }
 
@@ -461,10 +463,10 @@ def _03_standard_library(): Unit =
       // For future, wrapping a value means that the value may arrive asynchronously
       val futureContainingTheValue: Future[Int] = Future(10)
 
-      check(listContainingTheValue.contains(??))
-      check(optionContainingTheValue.contains(??))
-      check(eitherContainingTheValue.contains(??))
-      check(futureContainingTheValue.value.contains(Try(??)))
+      check(listContainingTheValue.contains(value))
+      check(optionContainingTheValue.contains(value))
+      check(eitherContainingTheValue.contains(value))
+      check(futureContainingTheValue.value.contains(Try(value)))
     }
 
     /**
@@ -497,19 +499,19 @@ def _03_standard_library(): Unit =
 
       // Applying the function f to a List of Int will apply this function to every element of the List.
       val listContainingTheValueApplyingF: List[Int] = listContainingTheValue.map(f)
-      check(listContainingTheValueApplyingF.contains(??))
+      check(listContainingTheValueApplyingF.contains(20))
 
       // Applying the function f to an Option will apply the function to the value if it exists or will be ignored if none.
       val optionContainingTheValueApplyingF: Option[Int] = optionContainingTheValue.map(f)
-      check(optionContainingTheValueApplyingF.contains(??))
+      check(optionContainingTheValueApplyingF.contains(20))
 
       // Applying the function f to an Either will apply the function to the value if it exists or will be ignored if it is an error.
       val eitherContainingTheValueApplyingF: Either[Nothing, Int] = eitherContainingTheValue.map(f)
-      check(eitherContainingTheValueApplyingF.contains(??))
+      check(eitherContainingTheValueApplyingF.contains(20))
 
       // Applying the function f to a Future will apply the function when the value arrive.
       val futureContainingTheValueApplyingF: Future[Int] = futureContainingTheValue.map(f)
-      check(futureContainingTheValueApplyingF.value.contains(Try(??)))
+      check(futureContainingTheValueApplyingF.value.contains(Try(20)))
     }
 
     exercise("Train to use the `flatMap` summing the content of two monad") {
@@ -530,28 +532,28 @@ def _03_standard_library(): Unit =
         listContainingTheValue.flatMap(theValue =>
           listContainingAnotherValue.map(anotherValue => theValue + anotherValue)
         )
-      check(listSum == List(??))
+      check(listSum == List(30))
 
       // Sum the content of the Options
       val optionSum: Option[Int] =
         optionContainingTheValue.flatMap(theValue =>
           optionContainingAnotherValue.map(anotherValue => theValue + anotherValue)
         )
-      check(optionSum == Option(??))
+      check(optionSum == Option(30))
 
       // Sum the content of the Eithers
       val eitherSum: Either[Nothing, Int] =
         eitherContainingTheValue.flatMap(theValue =>
           eitherContainingAnotherValue.map(anotherValue => theValue + anotherValue)
         )
-      check(eitherSum == Right(??))
+      check(eitherSum == Right(30))
 
       // Sum the content of the Future
       val futureSum: Future[Int] =
         futureContainingTheValue.flatMap(theValue =>
           futureContainingAnotherValue.map(anotherValue => theValue + anotherValue)
         )
-      check(Await.result(futureSum, Duration.Inf) == ??)
+      check(Await.result(futureSum, Duration.Inf) == 30)
     }
 
     /**
@@ -564,7 +566,7 @@ def _03_standard_library(): Unit =
       val words   = List("scala", "is", "great")
       val letters = words.flatMap(_.toUpperCase)
 
-      check(letters == ??)
+      check(letters == List('S', 'C', 'A', 'L', 'A', 'I', 'S', 'G', 'R', 'E', 'A', 'T'))
     }
 
     /**
@@ -606,7 +608,7 @@ def _03_standard_library(): Unit =
           anotherValue <- optionContainingAnotherValue
         } yield theValue + anotherValue
 
-      check(optionSum == ??)
+      check(optionSum == Option(30))
     }
 
   }

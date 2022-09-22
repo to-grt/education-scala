@@ -51,8 +51,8 @@ def _05_recursion(): Unit = {
           fillList(startInclusive + 1, endInclusive, newList)
         }
 
-      check(fillList(0, 9) == ??)
-      check(list == ??)
+      check(fillList(0, 9) == List(0,1,2,3,4,5,6,7,8,9))
+      check(list == List(0,1,2,3,4,5,6,7,8,9))
     }
 
   }
@@ -116,16 +116,16 @@ def _05_recursion(): Unit = {
       // todo: uncomment the tailrec annotation and modify the function so it's tail recursive.
       // hint: add an accumulator as argument
 
-      // @tailrec
-      def sum(l: List[Int]): Int =
+      @tailrec
+      def sum(l: List[Int], acc: Int = 0): Int =
         l match {
-          case Nil       => 0
-          case x :: tail => x + sum(tail)
+          case Nil       => acc
+          case x :: tail => sum(tail, acc + x)
         }
 
-      check(sum(List.empty) == ??)
-      check(sum(List(1)) == ??)
-      check(sum(List(1, 2, 3, 4)) == ??)
+      check(sum(List.empty) == 0)
+      check(sum(List(1)) == 1)
+      check(sum(List(1, 2, 3, 4)) == 10)
     }
 
     /**
@@ -162,7 +162,7 @@ def _05_recursion(): Unit = {
       /**
        * One of the perks of pure functions is that they can easily be
        * made lazy, meaning that they won't be evaluated until needed.
-       * Therefore it's easy to have structure that represent infinty.
+       * Therefore it's easy to have structure that represent infinity.
        *
        * Iterator.continually is one of these methods that return a
        * never ending iterator over which you can play
@@ -172,7 +172,7 @@ def _05_recursion(): Unit = {
 
       val extract: String = iterator.take(5).map(f => f()).mkString("\n")
 
-      check(extract == ??)
+      check(extract == "All work and no play makes Jack a dull boy.\nAll work and no play makes Jack a dull boy.\nAll work and no play makes Jack a dull boy.\nAll work and no play makes Jack a dull boy.\nAll work and no play makes Jack a dull boy.")
     }
 
     exercise("from") {
@@ -180,13 +180,13 @@ def _05_recursion(): Unit = {
       /**
        * maybe you're not interested in representing some of the
        * greatest Dory quotes. Then you might want to represent
-       * infintite sequences of Ints
+       * infinite sequences of Ints
        */
 
       val evenInts                = Iterator.from(0, 2)
       val evenNumbersLowerThanTen = evenInts.take(5).toList
 
-      check(evenNumbersLowerThanTen == ??)
+      check(evenNumbersLowerThanTen == List(0,2,4,6,8))
     }
 
     exercise("fibonacci") {
@@ -200,16 +200,16 @@ def _05_recursion(): Unit = {
       val fib = Iterator.iterate((0, 1))(t => (t._2, t._1 + t._2))
       val l2  = fib.take(5).map(t => t._2).mkString("0, ", ", ", ", etc.")
 
-      check(l2 == ??)
+      check(l2 == "0, 1, 1, 2, 3, 5, etc.")
     }
 
-    exercise("retry", activated = false) {
+    exercise("retry", activated = true) {
 
       /**
        * A [[LazyList]] (aka Stream) is like a List, except that its
        * elements are computed lazily.
        *
-       * Another key difference is that lazy lists memoize its values,
+       * Another key difference is that lazy lists memorize its values,
        * meaning that it can be traversed several times (whereas
        * Iterators can only be traversed once).
        *
@@ -252,6 +252,7 @@ def _05_recursion(): Unit = {
        * service that succeeds or, if the maximum number of retries has
        * been reached, it returns the last obtained error.
        */
+
       def retry[A](retryCount: Int)(serviceCall: Long => Try[A]): Try[A] = {
         // we use a LazyList to virtually represent an infinite number of retries.
         // each retry as a number. It starts from 1.
@@ -288,10 +289,14 @@ def _05_recursion(): Unit = {
       retry(6)(serviceCall)
         .foreach(result => output.append(result.toString))
 
-      check(output.mkString("\n") == ??)
+      check(output.mkString("\n") == "waiting for 150 milliseconds\nFailure(java.lang.Exception: not enough times spend)\nwaiting for 225 milliseconds\nFailure(java.lang.Exception: not enough times spend)\nwaiting for 337 milliseconds\nFailure(java.lang.Exception: not enough times spend)\n---\nwaiting for 150 milliseconds\nFailure(java.lang.Exception: not enough times spend)\nwaiting for 225 milliseconds\nFailure(java.lang.Exception: not enough times spend)\nwaiting for 337 milliseconds\nFailure(java.lang.Exception: not enough times spend)\nwaiting for 506 milliseconds\nFailure(java.lang.Exception: not enough times spend)\nwaiting for 759 milliseconds\nFailure(java.lang.Exception: not enough times spend)\nwaiting for 1139 milliseconds\nSuccess(42)")
 
-      // TODO explain why the program is not waiting after `---` ?
-      // hint: the answer is in the definition
+      /*
+      TODO explain why the program is not waiting after `---` ?
+      hint: the answer is in the definition
+
+      why would it wait?
+      */
     }
   }
 }

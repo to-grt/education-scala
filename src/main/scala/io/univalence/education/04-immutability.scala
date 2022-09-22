@@ -78,8 +78,8 @@ def _04_immutability(): Unit =
     mutable2.add(10)
     mutable2.add(20)
 
-    check(mutable1.int == ??)
-    check(mutable2.int == ??)
+    check(mutable1.int == 40)
+    check(mutable2.int == 40)
 
     /**
      * We add the keyword `case` here. A case class is a class with
@@ -98,8 +98,8 @@ def _04_immutability(): Unit =
         .add(10)
         .add(20)
 
-    check(immutable1.int == ??)
-    check(immutable2.int == ??)
+    check(immutable1.int == 10)
+    check(immutable2.int == 40)
   }
 
   /**
@@ -157,11 +157,11 @@ def _04_immutability(): Unit =
     val grownUpFiona = fiona.increaseAge
 
     // FIXME
-    check(grownUpFiona.age == fiona.age)
+    check(grownUpFiona.age == fiona.age + 1)
 
     val promotedFiona = fiona.changeJob("Tech lead")
 
-    check(promotedFiona.job == ??)
+    check(promotedFiona.job == Some("Tech lead"))
   }
 
   /**
@@ -178,6 +178,7 @@ def _04_immutability(): Unit =
      */
     exercise("Use immutable value to make a counter") {
       var mutableCount = 0
+      var seed = 1
 
       @tailrec
       def mutableF(): Unit = {
@@ -196,15 +197,15 @@ def _04_immutability(): Unit =
         else
           count + 1
 
-      Random.setSeed(1)
+      Random.setSeed(seed)
       mutableF()
 
-      check(mutableCount == ??)
+      check(mutableCount == 2)
 
-      Random.setSeed(1)
+      Random.setSeed(seed)
       val immutableCount = immutableF(0)
 
-      check(immutableCount == ??)
+      check(immutableCount == 2)
     }
 
     /**
@@ -267,7 +268,8 @@ def _04_immutability(): Unit =
           case Nil          => default
         }
 
-      check(list.foldLeft(0)(_ + _) == ??)
-      check(immutableFoldLeft(list)(0)(_ + _) == ??)
+      // Didn't understand the f function:  f: (A, B) => B
+      check(list.foldLeft(0)(_ + _) == 8)
+      check(immutableFoldLeft(list)(0)(_ + _) == 8)
     }
   }

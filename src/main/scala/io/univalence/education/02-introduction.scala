@@ -7,6 +7,8 @@ import scala.annotation.tailrec
 import scala.collection.SortedSet
 import scala.util.{Failure, Success, Try}
 
+import zio._
+
 @main
 def _02_introduction(): Unit = {
 
@@ -52,10 +54,11 @@ def _02_introduction(): Unit = {
        */
       val b = 8
 
-      check(a + b == ??)
+      check(a + b == 50)
 
       // todo: create a value so that the test passes
-      check(?? == "hello")
+      val c = "hello"
+      check(c == "hello")
     }
 
     /**
@@ -75,7 +78,7 @@ def _02_introduction(): Unit = {
       a = 3
       a += 8
 
-      check(a == ??)
+      check(a == 11)
     }
 
     /**
@@ -86,7 +89,7 @@ def _02_introduction(): Unit = {
      * explicitly (especially public functions)
      */
     exercise("Type inference") {
-      val a = ??
+      val a: Int = 8
 
       check(a.isInstanceOf[Int])
 
@@ -102,8 +105,8 @@ def _02_introduction(): Unit = {
        * type in the variable declaration. Also, the difference between
        * simple and complex here depends on the team your are working
        * in. It is obvious that `"hello"` or `1 + 1` are simples. But,
-       * how do you or how does your team categorize `Map("key1" ->
-       * 42)`?
+       * how do you or how does your team categorize Map("key1" ->
+       * 42)?
        */
     }
 
@@ -120,11 +123,11 @@ def _02_introduction(): Unit = {
 
       lazy val effect = { x += 1; 42 }
 
-      check(x == ??)
-      check(effect == ??)
-      check(x == ??)
-      check(effect == ??)
-      check(x == ??)
+      check(x == 0)
+      check(effect == 42)
+      check(x == 1)
+      check(effect == 42)
+      check(x == 1)
     }
 
     /**
@@ -146,11 +149,11 @@ def _02_introduction(): Unit = {
 
       def g = { x += 1; 42 }
 
-      check(x == ??)
-      check(g == ??)
-      check(x == ??)
-      check(g == ??)
-      check(x == ??)
+      check(x == 1)
+      check(g == 42)
+      check(x == 2)
+      check(g == 42)
+      check(x == 3)
     }
 
     /**
@@ -161,7 +164,7 @@ def _02_introduction(): Unit = {
       val br  = "ch"
       val ch  = "br"
       val str = s"Le ${br}as sur la ${ch}aise"
-      check(str == ??)
+      check(str == "Le chas sur la braise")
     }
 
   }
@@ -191,7 +194,7 @@ def _02_introduction(): Unit = {
        * Lists are used when in need of an ordered collection. Scala
        * lists are linked lists.
        */
-      val l1: List[Int] = |>?
+      val l1 = List(1, 2, 3, 4, 5, 6)
 
       check(l1 == 1 :: 2 :: 3 :: 4 :: 5 :: 6 :: Nil)
     }
@@ -201,7 +204,7 @@ def _02_introduction(): Unit = {
       /** ... But remember: Scala list are immutable! */
 
       val l1 = List(42)
-      val l2 = |>?
+      val l2: List[Int] = List(42, 43)
 
       check(l1 == List(42))
       check(l2 == List(42, 43))
@@ -220,7 +223,7 @@ def _02_introduction(): Unit = {
        * But those items are not indexed and are not ordered.
        */
       // TODO transform seqWithDuplicates into a Set
-      val set: Set[Int] = |>?
+      val set: Set[Int] = seqWithDuplicates.toSet
 
       check(seqWithDuplicates.size > set.size)
 
@@ -238,8 +241,8 @@ def _02_introduction(): Unit = {
       val sortedSet             = SortedSet.from(set)
       val map: Map[String, Int] = l.zip(sortedSet).toMap
 
-      check(sortedSet == ??)
-      check(map == ??)
+      check(sortedSet == SortedSet(1, 2, 3))
+      check(map == Map(("one", 1), ("two", 2), ("three", 3)))
     }
 
     exercise("Common collection operations") {
@@ -249,9 +252,9 @@ def _02_introduction(): Unit = {
       val tail            = list.tail
       val exists: Boolean = list.exists(_ < 1)
 
-      check(head == ??)
-      check(tail == ??)
-      check(exists == ??)
+      check(head == 1)
+      check(tail == List(2, 3, 4, 5, 6))
+      check(!exists)
     }
   }
 
@@ -274,16 +277,16 @@ def _02_introduction(): Unit = {
         def apply(n: Int): Int = n + 1
       }
 
-      check(plusOne(42) == ??)
-      check(addOne(42) == ??)
-      check(increment(42) == ??)
-      check(increase(42) == ??)
+      check(plusOne(42) == 43)
+      check(addOne(42) == 43)
+      check(increment(42) == 43)
+      check(increase(42) == 43)
 
       /**
        * Yes, `oneUp` also declares a kind of function, knowing that
        * `oneUp.apply(42)` can be reduced into `oneUp(42)`.
        */
-      check(oneUp(42) == ??)
+      check(oneUp(42) == 43)
 
       /**
        * You do not even have to declare the type of some anonymous
@@ -295,12 +298,12 @@ def _02_introduction(): Unit = {
 
       val incrementList = (list: List[Int]) => list.map(elt => elt + 1)
 
-      check(incrementList(List(42, 24)) == ??)
+      check(incrementList(List(42, 24)) == List(43, 25))
     }
 
     exercise("Function with a parameter") {
       // TODO Create your own function
-      val greeting: String => String = |>?
+      val greeting: String => String = ("Hello there, " + _)
 
       check(greeting("general Kenobi") == "Hello there, general Kenobi")
     }
@@ -316,14 +319,14 @@ def _02_introduction(): Unit = {
 
       def incrementBy(increment: Int, baseNumber: Int = 0) = baseNumber + increment
 
-      check(incrementBy(42) == ??)
-      check(incrementBy(42, 8) == ??)
-      check(incrementBy(baseNumber = 42, increment = 8) == ??)
+      check(incrementBy(42) == 42)
+      check(incrementBy(42, 8) == 50)
+      check(incrementBy(baseNumber = 42, increment = 8) == 50)
 
       // TODO modify the function greeting, so it returns "Hello world" when it has no parameter.
       val defaultParam                  = "world"
-      def greeting(str: String): String = s"Hello $str"
-      check(?? == "Hello world")
+      def greeting(str: String = defaultParam): String = s"Hello $str"
+      check(greeting() == "Hello world")
     }
 
     exercise("Curryfication") {
@@ -348,7 +351,7 @@ def _02_introduction(): Unit = {
       // function that increments 2 by another number
       def incrementByTwo: Int => Int = incrementBy(2)
 
-      check(incrementByTwo(8) == ??)
+      check(incrementByTwo(8) == 10)
 
       /** Here is another way to write it */
 
@@ -367,7 +370,7 @@ def _02_introduction(): Unit = {
        * takes precedence over another but you get the idea.
        */
 
-      check(addXtoN(2)(8) == ??)
+      check(addXtoN(2)(8) == 10)
     }
 
     exercise("Haskell says hi") {
@@ -376,7 +379,7 @@ def _02_introduction(): Unit = {
       val specializedGreeting: String => String = greeting("Hello ")
 
       // TODO use specializedGreeting to complete this exercise
-      check(?? == "Hello world")
+      check(specializedGreeting("world") == "Hello world")
     }
 
     exercise("Parameter name on function call") {
@@ -391,13 +394,13 @@ def _02_introduction(): Unit = {
 
       def functionWithManyParameters(a: Int, b: Int, c: Int, d: Int): Int = a + b + c + d
 
-      check(functionWithManyParameters(c = 1, a = 2, d = 3, b = 4) == ??)
+      check(functionWithManyParameters(c = 1, a = 2, d = 3, b = 4) == 10)
 
       case class User(firstName: String, lastName: String)
 
       val johnDoe = User("john", "doe")
 
-      check(johnDoe.copy(firstName = "jane") == ??)
+      check(johnDoe.copy(firstName = "jane") == User(firstName="jane", lastName="doe"))
     }
 
     exercise("Call-by=value & call-by-name") {
@@ -430,11 +433,11 @@ def _02_introduction(): Unit = {
         "hello"
       }
 
-      check(double1(evaluate = false, messageWithAnEffect1) == ??)
-      check(x1 == ??)
+      check(double1(evaluate = false, messageWithAnEffect1) == "nope")
+      check(x1 == 1)
 
-      check(double1(evaluate = true, messageWithAnEffect1) == ??)
-      check(x1 == ??)
+      check(double1(evaluate = true, messageWithAnEffect1) == "hello hello")
+      check(x1 == 1)
 
       /**
        * Now, let's use a by-name parameter!
@@ -459,11 +462,11 @@ def _02_introduction(): Unit = {
         "hello"
       }
 
-      check(double2(evaluate = false, messageWithAnEffect2) == ??)
-      check(x2 == ??)
+      check(double2(evaluate = false, messageWithAnEffect2) == "nope")
+      check(x2 == 1)
 
-      check(double2(evaluate = true, messageWithAnEffect2) == ??)
-      check(x2 == ??)
+      check(double2(evaluate = true, messageWithAnEffect2) == "hello hello")
+      check(x2 == 1)
     }
 
   }
@@ -476,7 +479,7 @@ def _02_introduction(): Unit = {
       val x: Int            = 42
       val condition: String = if (x == 42) "forty two" else "some other number"
 
-      check(condition == ??)
+      check(condition == "forty two")
     }
 
     exercise("If else as a value") {
@@ -485,9 +488,9 @@ def _02_introduction(): Unit = {
 
       val x: Int      = 42
       val condition   = if (x % 2 == 0) "even" else "odd"
-      val str: String = s"x is an ${??} number"
+      val str: String = s"x is an ${condition} number"
 
-      check(str == ??)
+      check(str == "x is an even number")
     }
   }
 
@@ -511,7 +514,7 @@ def _02_introduction(): Unit = {
       val bulbasaur = Pokemon("Bulbasaur", 1)
 
       /** TODO create a new Pokemon named ditto with an id of 132. */
-      val ditto: Pokemon = |>?
+      val ditto: Pokemon = Pokemon("Ditto", 132)
 
       /**
        * Ditto is a pokemon with a special attack called `Transform`
@@ -522,11 +525,11 @@ def _02_introduction(): Unit = {
 
       val transformedDitto = ditto.copy(name = "Bulbasaur")
 
-      check(transformedDitto == ??)
+      check(transformedDitto == Pokemon("Bulbasaur", 132))
 
       // TODO Let's finish the transformation by giving ditto bulbasaur's id
 
-      val fullyTransformedDitto = |>?
+      val fullyTransformedDitto = transformedDitto.copy(id = bulbasaur.id)
 
       // the following test should pass, as case classes are compared by value.
       check(fullyTransformedDitto == bulbasaur)
@@ -545,16 +548,16 @@ def _02_introduction(): Unit = {
        *     `true`
        */
 
-      |>?
+      case class Student(name: String, grades: Seq[Int], isHardWorking: Boolean = true)
 
       // TODO create an instance of Student in a way that passes the test
 
-      |>?
+      val student: Student = Student(name = "jack", grades = Seq[Int](1, 2, 3))
 
       // TODO uncomment those lines
-      // val student = Student("jack", List(1,2,3))
-      // check(student.isInstanceOf[Student])
-      // check(student.isHardWorking == true)
+      val student2 = Student("jack", List(1,2,3))
+      check(student.isInstanceOf[Student])
+      check(student.isHardWorking)
     }
 
   }
@@ -566,7 +569,7 @@ def _02_introduction(): Unit = {
       /**
        * The type Option represents optional values Optional values can
        * be one of the following two types:
-       *   - None: represnting the absence of value.
+       *   - None: representing the absence of value.
        *   - Some: representing the presence of a value.
        */
 
@@ -574,8 +577,8 @@ def _02_introduction(): Unit = {
       val a   = Some(42)
       val b   = None
 
-      check(map.get("a") == ??)
-      check(map.get("b") == ??)
+      check(map.get("a") == a)
+      check(map.get("b") == b)
     }
 
     exercise("Function returning a Try") {
@@ -590,11 +593,11 @@ def _02_introduction(): Unit = {
       val try1: Try[Double] = Try("42".toDouble)
       val try2: Try[Double] = Try("4 2".toDouble)
 
-      val success = ??
-      val failure = ??
+      val success = Success(42.0)
+      val failure = Failure(new NumberFormatException())
 
       check(try1 == success)
-      check(try2 == failure)
+      check(try2.isFailure)
     }
 
     exercise("Either") {
@@ -615,8 +618,8 @@ def _02_introduction(): Unit = {
 
       def morpheus(choice: Boolean): Either[BluePill, RedPill] = if (choice) Right("truth") else Left(1010110100)
 
-      check(morpheus(true) == ??)
-      check(morpheus(false) == ??)
+      check(morpheus(true) == Right("truth"))
+      check(morpheus(false) == Left(1010110100))
     }
 
     exercise("For comprehension") {
@@ -635,7 +638,7 @@ def _02_introduction(): Unit = {
           eight    <- option2
         } yield fortyTwo + eight
 
-      check(sumOption == ??)
+      check(sumOption == Some(50))
     }
   }
 
@@ -659,9 +662,9 @@ def _02_introduction(): Unit = {
        * Then uncomment the following lines and see if the test passes
        */
 
-      // val zioTest: UIO[Unit] = ZIO.unit
+      val zioTest: UIO[Unit] = ZIO.unit
 
-      // check(zioTest.isInstanceOf[UIO[Unit]])
+      check(zioTest.isInstanceOf[UIO[Unit]])
     }
   }
 
@@ -677,9 +680,9 @@ def _02_introduction(): Unit = {
         case Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune
 
       // TODO list all possible planets of the solar system in a Set
-      val enumValues: Set[SolarSystemPlanet] = |>?
+      val enumValues: Set[SolarSystemPlanet] = (SolarSystemPlanet.values).toSet
 
-      check(enumValues.size == 9)
+      check(enumValues.size == 8)
 
       /**
        * Scala enums come with basic operations such as:
@@ -692,11 +695,11 @@ def _02_introduction(): Unit = {
        *   - fromOrdinal: retrieve enum value from ordinal ->
        *     SolarSystemPlanet.fromOrdinal(0)
        */
-
-      check(SolarSystemPlanet.values == ??)
-      check(SolarSystemPlanet.Earth.ordinal == ??)
-      check(SolarSystemPlanet.fromOrdinal(0) == ??)
-      check(SolarSystemPlanet.valueOf("Mars") == ??)
+      import SolarSystemPlanet.*
+      check(SolarSystemPlanet.values.toList == List(Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune))
+      check(SolarSystemPlanet.Earth.ordinal == 2)
+      check(SolarSystemPlanet.fromOrdinal(0) == SolarSystemPlanet.Mercury)
+      check(SolarSystemPlanet.valueOf("Mars") == SolarSystemPlanet.Mars)
 
     }
 
@@ -712,7 +715,7 @@ def _02_introduction(): Unit = {
 
       val red = ParamColor.Red
 
-      check(red.rgb == ??)
+      check(red.rgb == 0xff0000)
     }
 
     exercise("enums on steroids") {
@@ -727,7 +730,7 @@ def _02_introduction(): Unit = {
         case SmallRectangle extends Squared(2, 4)
       end Squared
 
-      check(Squared.Square.area == ??)
+      check(Squared.Square.area == 4)
     }
 
   }
@@ -767,8 +770,8 @@ def _02_introduction(): Unit = {
           case _ => "Open the door and let 'em in"
         }
 
-      check(letEmIn(2) == ??)
-      check(letEmIn(42) == ??)
+      check(letEmIn(2) == "Brother John")
+      check(letEmIn(42) == "Open the door and let 'em in")
     }
 
     exercise("Type matching") {
@@ -787,9 +790,9 @@ def _02_introduction(): Unit = {
           case _         => None
         }
 
-      check(defaultValueForTypeOf(1) == ??)
-      check(defaultValueForTypeOf("hello") == ??)
-      check(defaultValueForTypeOf(List(1, 2, 3)) == ??)
+      check(defaultValueForTypeOf(1) == Some(0))
+      check(defaultValueForTypeOf("hello") == Some(""))
+      check(defaultValueForTypeOf(List(1, 2, 3)) == None)
 
       // TODO: We can match multiple type at once: case _ @ (_: Int, _: Double)
     }
@@ -802,13 +805,17 @@ def _02_introduction(): Unit = {
             case x :: tail => x + sum(tail)
           }
 
-        check(sum(List.empty) == ??)
-        check(sum(List(1)) == ??)
-        check(sum(List(1, 2, 3, 4)) == ??)
+        check(sum(List.empty) == 0)
+        check(sum(List(1)) == 1)
+        check(sum(List(1, 2, 3, 4)) == 10)
       }
 
       exercise("Length of list") {
-        def length[A](l: List[A]): Int = |>?
+        def length[A](l: List[A]): Int =
+          l.length match {
+            case 0 => 0
+            case _ => l.length
+          }
 
         check(length(List.empty[String]) == 0)
         check(length(List(10, 20, 40)) == 3)
@@ -817,8 +824,12 @@ def _02_introduction(): Unit = {
 
       exercise("Sum of a list (tail recursive)") {
         // TODO uncomment the line below
-        // @tailrec
-        def sum(l: List[Int]): Int = |>?
+        @tailrec
+        def sum(l: List[Int], acc: Int = 0): Int = {
+          if (l.isEmpty) 0
+          else if (l.length == 1) l.head + acc
+          else sum(l.tail, acc+l.head)
+        }
 
         check(sum(List.empty) == 0)
         check(sum(List(2)) == 2)
