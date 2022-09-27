@@ -51,7 +51,9 @@ def _07_generic_types(): Unit = {
        *
        * The `map` operation aims to modify the value inside the box.
        */
-      extension [A](box: Box[A]) def map[B](f: A => B): Box[B] = |>?
+      extension [A](box: Box[A]) def map[B](f: A => B): Box[B] = {
+        Box(f(box.value))
+      }
 
       check(Box(42).map(_ * 2) == Box(84))
       check(Box("42").map(_.toInt) == Box(42))
@@ -63,7 +65,9 @@ def _07_generic_types(): Unit = {
        * The `flatMap` operation is almost similar to `map`, except that
        * it can be used to chain operations using the value inside boxes.
        */
-      extension [A](box: Box[A]) def flatMap[B](f: A => Box[B]): Box[B] = |>?
+      extension [A](box: Box[A]) def flatMap[B](f: A => Box[B]): Box[B] = {
+        f(box.value)
+      }
 
       check(Box(12).flatMap(a => Box(13).flatMap(b => Box(a + b))) == Box(25))
 
@@ -73,7 +77,9 @@ def _07_generic_types(): Unit = {
        */
 
       // TODO write map again by using flatMap
-      extension [A](box: Box[A]) def map[B](f: A => B): Box[B] = |>?
+      extension [A](box: Box[A]) def map[B](f: A => B): Box[B] = {
+        Box(box.flatMap(f))
+      }
 
       /**
        * The for-comprehension below is equivalent to

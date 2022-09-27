@@ -91,11 +91,37 @@ def _06_adt(): Unit =
 
       def simplify(expression: Expression): Expression =
         expression match
+          case Variable => expression
+          case Constant(value) => expression
+          case Add(left, right) => {
+            if (left == Zero) right
+            else if(right == Zero) left
+            else expression
+          }
+          case Mult(left, right) => {
+            if (left == One) right
+            else if (right == One) left
+            else if (left == Zero || right == Zero) Zero
+            else expression
+          }
+
+      /*
+      def simplify(expression: Expression): Expression =
+        expression match
           case Variable           => expression
           case Constant(value)    => expression
-          case Add(left, right)   => 
-          case Mult(left, right)  => 
-
+          case Add(left, right)   => {
+            if(left==Zero) simplify(right)
+            else if(right==Zero) simplify(left)
+            else simplify(expression)
+          }
+          case Mult(left, right)  => {
+            if(left==One) simplify(right)
+            else if(right==One) simplify(left)
+            else if(left==Zero || right==Zero) Zero
+            else simplify(expression)
+          }
+      */
       /**
        * Find the fixed point of a function.
        *
